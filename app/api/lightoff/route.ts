@@ -58,7 +58,7 @@ export async function POST(request: Request) {
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error(
-                        `Failed to turn on light for appliance ${applianceId}:`,
+                        `Failed to turn off light for appliance ${applianceId}:`,
                         errorText
                     );
                     return { success: false, applianceId, error: errorText };
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         if (failedRequests.length > 0) {
             return NextResponse.json(
                 {
-                    message: "One or more light on requests failed.",
+                    message: "One or more light off requests failed.",
                     failed: failedRequests,
                 },
                 { status: 500 }
@@ -79,13 +79,13 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(
-            { message: "Light on requests sent successfully." },
+            { message: "Light off requests sent successfully." },
             { status: 200 }
         );
     } catch (error) {
-        console.error("Error processing light on request:", error);
+        console.error("Error processing light off request:", error);
         return NextResponse.json(
-            { error: "Failed to process light on request." },
+            { error: "Failed to process light off request." },
             { status: 500 }
         );
     }
