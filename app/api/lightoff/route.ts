@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { passkey } = body;
+        const bodyText = await request.text();
+        const params = new URLSearchParams(bodyText);
+        const passkey = params.get("passkey");
 
         // Check if the passkey matches the one in the environment variables
         if (passkey !== process.env.PASSKEY) {
