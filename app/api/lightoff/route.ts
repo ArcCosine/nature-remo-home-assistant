@@ -22,12 +22,12 @@ export async function POST(request: Request) {
             );
         }
 
-        const applianceIdsString = process.env.LIGHTOFF_APPLIANCE_IDS;
+        const applianceIdsString = process.env.LIGHT_APPLIANCE_IDS;
         if (!applianceIdsString) {
-            console.error("LIGHTOFF_APPLIANCE_IDS is not set.");
+            console.error("LIGHT_APPLIANCE_IDS is not set.");
             return NextResponse.json(
                 {
-                    error: "Server configuration error: LIGHTOFF_APPLIANCE_IDS is missing.",
+                    error: "Server configuration error: LIGHT_APPLIANCE_IDS is missing.",
                 },
                 { status: 500 }
             );
