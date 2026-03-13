@@ -11,12 +11,11 @@ Frameworkには
 
 を使います。
 
-# lintとformatに関して
+# Lint・フォーマットについて
 
-コード修正後、必ず
+修正を完了した際は、必ず以下のコマンドを実行し、コードの品質を担保してください。
 
-    bun run lint
-    bun run check
-    bun run format
+-   `bun run format`
+-   `bun run lint`
 
-を実行して、コード整形をしてください。
+lintが通らなかった場合は、その部分を修正してください。
