@@ -10,3 +10,13 @@ Frameworkには
 -   MUI
 
 を使います。
+
+# lintとformatに関して
+
+コード修正後、必ず
+
+    bun run lint
+    bun run check
+    bun run format
+
+を実行して、コード整形をしてください。
