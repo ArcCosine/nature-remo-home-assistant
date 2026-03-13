@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
   "vcs": {
     "enabled": true,
@@ -8,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/.next", "!**/out", "!**/build", "!**/next-env.d.ts"]
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/out",
+      "!**/build",
+      "!**/next-env.d.ts",
+      "!node_modules",
+      "!dist"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -28,38 +35,4 @@
       "quoteStyle": "double"
     }
   }
-=======
-	"$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
-	"vcs": {
-		"enabled": true,
-		"clientKind": "git",
-		"useIgnoreFile": true
-	},
-	"files": {
-		"ignoreUnknown": false
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	},
-	"assist": {
-		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
-		}
-	}
->>>>>>> 29b72bb502a2a40bd529fb2a499cdbfa38ec4d40
 }
