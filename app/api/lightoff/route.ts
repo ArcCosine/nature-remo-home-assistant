@@ -1,13 +1,61 @@
 import { NextResponse } from "next/server";
+import { verifyPasskey } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
+import {
+  createValidationErrorResponse,
+  LightControlRequestSchema,
+  validateApplianceId,
+} from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
+    const clientIp = (request.headers.get("x-forwarded-for")?.split(",")[0] ||
+      request.headers.get("x-real-ip") ||
+      "unknown") as string;
+
+    // Check rate limit: 10 requests per minute per IP
+    const rateLimitResult = checkRateLimit(clientIp, {
+      maxRequests: 10,
+      windowMs: 60 * 1000,
+    });
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many requests. Please try again later.",
+          retryAfter: Math.ceil(
+            (rateLimitResult.resetTime - Date.now()) / 1000,
+          ),
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(
+              (rateLimitResult.resetTime - Date.now()) / 1000,
+            ).toString(),
+          },
+        },
+      );
+    }
+
     const bodyText = await request.text();
     const params = new URLSearchParams(bodyText);
     const passkey = params.get("passkey");
 
-    // Check if the passkey matches the one in the environment variables
-    if (passkey !== process.env.PASSKEY) {
+    // Validate request parameters
+    const validationResult = LightControlRequestSchema.safeParse({
+      passkey,
+    });
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        createValidationErrorResponse(validationResult.error.issues),
+        { status: 400 },
+      );
+    }
+
+    // Check if the passkey matches using timing-safe comparison
+    if (!verifyPasskey(passkey, process.env.PASSKEY)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -30,7 +78,27 @@ export async function POST(request: Request) {
         { status: 500 },
       );
     }
-    const applianceIds = applianceIdsString.split(",").map((id) => id.trim());
+    const applianceIds = applianceIdsString
+      .split(",")
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0);
+
+    // Validate appliance IDs
+    const invalidIds = applianceIds.filter((id) => !validateApplianceId(id));
+    if (invalidIds.length > 0) {
+      console.error("Invalid appliance IDs in configuration:", invalidIds);
+      return NextResponse.json(
+        { error: "Server configuration error: Invalid appliance IDs." },
+        { status: 500 },
+      );
+    }
+
+    if (applianceIds.length === 0) {
+      return NextResponse.json(
+        { error: "No appliance IDs configured." },
+        { status: 500 },
+      );
+    }
 
     const results = [];
     for (let i = 0; i < applianceIds.length; i++) {
